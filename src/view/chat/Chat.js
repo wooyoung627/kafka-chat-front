@@ -1,12 +1,12 @@
 import { Button } from 'reactstrap';
+import { apiClient } from 'util/util';
 import { useEffect } from 'react';
 
 const Chat = () => {
     let websocket;
 
     useEffect(() => {
-        console.log("Chat Component Mount");
-        wsConnect('ws://localhost:8080/ws/chat');
+        wsConnect('ws://192.168.10.55:8080/ws/chat');
     }, [])
 
     const wsConnect = (url) => {
@@ -31,9 +31,12 @@ const Chat = () => {
     }
 
     const clickButton = () => {
-        if (websocket !== null) {
-            websocket.send("send data");
+        let msg = {
+            "id": "wylee",
+            "msg" : "hi"
         }
+
+        apiClient.post('/chat', msg);
     }
 
 
