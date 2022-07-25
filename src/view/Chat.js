@@ -11,7 +11,7 @@ const Chat = () => {
     let websocket;
 
     useEffect(() => {
-        // wsConnect('ws://192.168.10.55:8080/ws/chat');
+        wsConnect('ws://192.168.10.55:8080/ws/chat');
     }, [])
 
     const wsConnect = (url) => {
@@ -23,6 +23,7 @@ const Chat = () => {
 
         websocket.onmessage = (e) => {
             console.log("Message : ", e)
+            onMessage(e.data);
         }
 
         websocket.onclose = () => {
@@ -32,7 +33,13 @@ const Chat = () => {
         websocket.onerror = (e) => {
             console.log("WebSocket ERROR : ", e)
         }
+    }
 
+    const onMessage = (data) => {
+        let user = data.user;
+        let msg = data.msg;
+
+        
     }
 
     const msgChange = (e) => {
@@ -46,8 +53,6 @@ const Chat = () => {
         }
 
         apiClient.post('/chat', data);
-
-        console.log(userContext.user)
     }
 
 
