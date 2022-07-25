@@ -1,17 +1,28 @@
-import { Button, Input } from 'reactstrap';
+import { Button, Input, InputGroup, Card, CardHeader, CardBody, CardFooter } from 'reactstrap';
 import { apiClient } from 'util/util';
 import { useContext, useEffect, useState } from 'react';
 import { UserContext } from 'store/user';
+import './Chat.css';
 
 
 const Chat = () => {
     const userContext = useContext(UserContext);
     const [msg, setMsg] = useState('');
+    const [msgList, setMsgList] = useState([]);
 
     let websocket;
 
     useEffect(() => {
-        wsConnect('ws://192.168.10.55:8080/ws/chat');
+        // let url = 'ws://192.168.10.55:8080/ws/chat';
+        let url = 'ws://localhost:8080/ws/chat';
+        wsConnect(url);
+
+        return (() => {
+            if (websocket != null) {
+                console.log('!! websocket close !!');
+                websocket.close();
+            }
+        })
     }, [])
 
     const wsConnect = (url) => {
@@ -23,7 +34,7 @@ const Chat = () => {
 
         websocket.onmessage = (e) => {
             console.log("Message : ", e)
-            onMessage(e.data);
+            onMessage(JSON.parse(e.data));
         }
 
         websocket.onclose = () => {
@@ -36,10 +47,12 @@ const Chat = () => {
     }
 
     const onMessage = (data) => {
-        let user = data.user;
-        let msg = data.msg;
-
-        
+        let msgListTmp = msgList;
+        msgListTmp.push(data);
+        console.log(msgListTmp)
+        setMsgList([...msgListTmp]);
+        // let user = data.user;
+        // let msg = data.msg;
     }
 
     const msgChange = (e) => {
@@ -58,10 +71,30 @@ const Chat = () => {
 
     return (
         <div>
-            <Input value={msg} onChange={msgChange} />
-            <Button onClick={sendMsg}>
-                {'전송'}
-            </Button>
+            {msgList.map((data, index) => {
+
+                return <div key={index}>
+                <Card key={msgList.length}>
+                    <CardHeader>
+                        {data.user.nickname}
+                    </CardHeader>
+                    <CardBody>
+                        {data.msg}
+                    </CardBody>
+                    <CardFooter>
+                        {data.time}
+                    </CardFooter>
+                    </Card>
+                </div>
+            })}
+            <div className="chat-input">
+                <InputGroup>
+                    <Input value={msg} onChange={msgChange} />
+                    <Button onClick={sendMsg}>
+                        {'전송'}
+                    </Button>
+                </InputGroup>
+            </div>
         </div>
     )
 }

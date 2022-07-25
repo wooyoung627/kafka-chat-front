@@ -3,10 +3,11 @@ import { Redirect, Route, Routes, BrowserRouter, Router } from 'react-router-dom
 import UserStore from 'store/user';
 import routes from 'routes';
 import { Suspense } from 'react';
+import './App.css';
 
 function App() {
   return (
-    <div>
+    <div className="App">
       <UserStore>
         <Suspense>
           <BrowserRouter>

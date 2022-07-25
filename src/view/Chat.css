@@ -1,0 +1,10 @@
+.chat-input {
+    position: fixed;
+    bottom: 0;
+    width: 600px;
+    margin-bottom: 2%;
+}
+
+.chat-input  button {
+    width: 12%;
+}

@@ -1,8 +1,13 @@
 .App {
   text-align: center;
+  min-height: 100vh;
+  width: 600px;
+
+  padding: 10% 0;
+  /* padding: 10% 25% 0 25%; */
 }
 
-.App-logo {
+/* .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
@@ -35,4 +40,4 @@
   to {
     transform: rotate(360deg);
   }
-}
+} */

@@ -23,7 +23,7 @@ const SignUp = () => {
     return (
         <div>
             <Input value={nickname} onChange={nicknameChange} placeholder="사용할 닉네임을 입력해 주세요."/>
-            <Button onClick={useNickname}>{'사용하기'}</Button>
+            <Button style={{marginTop:'20px'}} onClick={useNickname}>{'사용하기'}</Button>
         </div>
     )
 }
