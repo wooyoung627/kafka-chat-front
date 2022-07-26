@@ -17,7 +17,7 @@
 }
 
 .chat-msg {
-    width: 50%;
+    width: 40%;
 }
 
 .chat-msg .card-body{
@@ -27,6 +27,14 @@
 .chat-time {
     font-size: 0.8rem;
     padding: 5px;
+}
+
+.chat-exit {
+    position: fixed;
+    top: 0;
+    padding: 15px 15px 0 0;
+    text-align: right;
+    width: 600px;
 }
 
 .chat-input {

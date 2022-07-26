@@ -1,10 +1,11 @@
-import { Button, Input, InputGroup, Card, CardHeader, CardBody, CardFooter } from 'reactstrap';
+import { Button, Input, InputGroup, Card, CardBody } from 'reactstrap';
 import { apiClient } from 'util/util';
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from 'store/user';
 import './Chat.css';
 
+const moment = require('moment');
 
 const Chat = () => {
     const navigate = useNavigate();
@@ -35,6 +36,7 @@ const Chat = () => {
         websocket = new WebSocket(url);
 
         websocket.onopen = () => {
+            apiClient.post('/chat/enter', userContext.user);
             console.log("WebSocket opened...")
         }
 
@@ -44,6 +46,7 @@ const Chat = () => {
         }
 
         websocket.onclose = () => {
+            apiClient.post('/chat/exit', userContext.user);
             console.log("WebSocket closed...");
         }
 
@@ -55,10 +58,7 @@ const Chat = () => {
     const onMessage = (data) => {
         let msgListTmp = msgList;
         msgListTmp.push(data);
-        console.log(msgListTmp)
         setMsgList([...msgListTmp]);
-        // let user = data.user;
-        // let msg = data.msg;
     }
 
     const msgChange = (e) => {
@@ -74,29 +74,48 @@ const Chat = () => {
         apiClient.post('/chat', data);
         setMsg('');
     }
+    
+    const setTime = (date) => {
+        return moment(date).format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    const exit = () => {
+        userContext.setUser({ id:'', nickname:'' });
+        navigate('/');
+    }
 
 
     return (
         <div>
+            <div className="chat-exit">
+                <Button onClick={exit} color="danger">
+                    {'나가기'}
+                </Button>
+            </div>
             {msgList.map((data, index) => {
-                return <div key={index} className={userContext.user.id === data.user.id ? 'chat-my' : 'chat-other' }>
-                    <label className="chat-nickname">
-                        {data.user.nickname}
-                    </label>
-                    <Card key={msgList.length} className="chat-msg">
-                        <CardBody>
-                            {data.msg}
-                        </CardBody>
-                    </Card>
-                    <label className="chat-time">
-                        {data.time}
-                    </label>
-                </div>
+                if (data.state === 0)
+                    return <div key={index} className={userContext.user.id === data.user.id ? 'chat-my' : 'chat-other' }>
+                        <label className="chat-nickname">
+                            {data.user.nickname}
+                        </label>
+                        <Card key={msgList.length} className="chat-msg">
+                            <CardBody>
+                                {data.msg}
+                            </CardBody>
+                        </Card>
+                        <label className="chat-time">
+                            {setTime(data.time)}
+                        </label>
+                    </div>
+                else if (data.state === 1)
+                    return <div key={index}>
+                        {data.user.nickname + data.msg}
+                    </div>
             })}
             <div className="chat-input">
                 <InputGroup>
                     <Input value={msg} onChange={msgChange} />
-                    <Button onClick={sendMsg}>
+                    <Button onClick={sendMsg} color="primary">
                         {'전송'}
                     </Button>
                 </InputGroup>
