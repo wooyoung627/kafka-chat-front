@@ -1,11 +1,13 @@
 import { Button, Input, InputGroup, Card, CardHeader, CardBody, CardFooter } from 'reactstrap';
 import { apiClient } from 'util/util';
 import { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from 'store/user';
 import './Chat.css';
 
 
 const Chat = () => {
+    const navigate = useNavigate();
     const userContext = useContext(UserContext);
     const [msg, setMsg] = useState('');
     const [msgList, setMsgList] = useState([]);
@@ -13,6 +15,10 @@ const Chat = () => {
     let websocket;
 
     useEffect(() => {
+        if (userContext.user.id === '' || userContext.user.nickname === '') {
+            navigate('/');
+        }
+
         // let url = 'ws://192.168.10.55:8080/ws/chat';
         let url = 'ws://localhost:8080/ws/chat';
         wsConnect(url);
@@ -66,25 +72,25 @@ const Chat = () => {
         }
 
         apiClient.post('/chat', data);
+        setMsg('');
     }
 
 
     return (
         <div>
             {msgList.map((data, index) => {
-
-                return <div key={index}>
-                <Card key={msgList.length}>
-                    <CardHeader>
+                return <div key={index} className={userContext.user.id === data.user.id ? 'chat-my' : 'chat-other' }>
+                    <label className="chat-nickname">
                         {data.user.nickname}
-                    </CardHeader>
-                    <CardBody>
-                        {data.msg}
-                    </CardBody>
-                    <CardFooter>
-                        {data.time}
-                    </CardFooter>
+                    </label>
+                    <Card key={msgList.length} className="chat-msg">
+                        <CardBody>
+                            {data.msg}
+                        </CardBody>
                     </Card>
+                    <label className="chat-time">
+                        {data.time}
+                    </label>
                 </div>
             })}
             <div className="chat-input">
